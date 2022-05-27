@@ -9,6 +9,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGeneratorContext;
@@ -36,11 +38,31 @@ import com.archimatetool.model.IDiagramModel;
  * 
  * @author Phillip Beauvoir
  */
+@SuppressWarnings("nls")
 public abstract class AbstractExportProvider implements IImageExportProvider {
     
     private IFigure figure;
     protected SVGGraphics2D svgGraphics2D;
     protected Rectangle viewPortBounds;
+    protected boolean textAsShapes = true;
+    
+    protected Map<String, String> attributes;
+    
+    /**
+     * Whether to draw text as shapes
+     * @param set
+     */
+    public void setDrawTextAsShapes(boolean set) {
+        textAsShapes = set;
+    }
+
+    /**
+     * Set an optional map of attributes to be added to the root element
+     * @param attributes name/value pairs
+     */
+    public void setElementRootAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
     
     protected void initialiseGraphics() {
         // Ensure user fonts are loaded into AWT for Windows
@@ -53,7 +75,7 @@ public abstract class AbstractExportProvider implements IImageExportProvider {
         SVGGeneratorContext ctx = createContext(document, false); // Don't embed fonts
         
         // Create a Batik SVGGraphics2D instance
-        svgGraphics2D = new SVGGraphics2D(ctx, true); // Text is drawn as shapes
+        svgGraphics2D = getSVGGraphics2D(ctx);
         
         // Create a Graphiti wrapper adapter
         GraphicsToGraphics2DAdaptor graphicsAdaptor = createGraphicsToGraphics2DAdaptor(svgGraphics2D, viewPortBounds);
@@ -70,6 +92,15 @@ public abstract class AbstractExportProvider implements IImageExportProvider {
         
         // Get the outer bounds of the figure
         viewPortBounds = getViewportBounds(figure);
+    }
+    
+    /**
+     * Get the SVGGraphics2D instance
+     * @param ctx The SVGGeneratorContext
+     * @return The SVGGraphics2D instance
+     */
+    protected SVGGraphics2D getSVGGraphics2D(SVGGeneratorContext ctx) {
+        return new SVGGraphics2D(ctx, textAsShapes);
     }
     
     /**
@@ -94,8 +125,8 @@ public abstract class AbstractExportProvider implements IImageExportProvider {
      */
     protected Document createDocument() {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
-        String svgNS = "http://www.w3.org/2000/svg"; //$NON-NLS-1$
-        return domImpl.createDocument(svgNS, "svg", null); //$NON-NLS-1$
+        String svgNS = "http://www.w3.org/2000/svg";
+        return domImpl.createDocument(svgNS, "svg", null);
     }
     
     /**
@@ -136,7 +167,7 @@ public abstract class AbstractExportProvider implements IImageExportProvider {
      * @param height
      */
     protected void setViewBoxAttribute(Element root, int min_x, int min_y, int width, int height) {
-        root.setAttributeNS(null, "viewBox", min_x + " " + min_y + " " + width + " " + height);  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        root.setAttributeNS(null, "viewBox", min_x + " " + min_y + " " + width + " " + height);
     }
     
     /**
@@ -168,6 +199,13 @@ public abstract class AbstractExportProvider implements IImageExportProvider {
             setViewBoxAttribute(root, 0, 0, viewPortBounds.width, viewPortBounds.height);
         }
         
+        // Set any other attributes on the root element
+        if(attributes != null) {
+            for(Entry<String, String> att : attributes.entrySet()) {
+                root.setAttributeNS(null, att.getKey(), att.getValue());
+            }
+        }
+        
         return root;
     }
 
@@ -178,7 +216,7 @@ public abstract class AbstractExportProvider implements IImageExportProvider {
     
     private static void loadUserFontsIntoAWT() {
         if(PlatformUtils.isWindows() && !awtFontsLoaded) {
-            File fontsFolder = new File(System.getProperty("user.home"), "AppData/Local/Microsoft/Windows/Fonts"); //$NON-NLS-1$ //$NON-NLS-2$
+            File fontsFolder = new File(System.getProperty("user.home"), "AppData/Local/Microsoft/Windows/Fonts");
             if(fontsFolder.exists()) {
                 GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
                 

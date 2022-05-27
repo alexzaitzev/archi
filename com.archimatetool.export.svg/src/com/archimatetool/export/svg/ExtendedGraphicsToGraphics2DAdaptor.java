@@ -1,20 +1,27 @@
+/**
+ * This program and the accompanying materials
+ * are made available under the terms of the License
+ * which accompanies this distribution in the file LICENSE.txt
+ */
 package com.archimatetool.export.svg;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Pattern;
 
+import com.archimatetool.editor.diagram.figures.IPaintFigureListener;
 import com.archimatetool.export.svg.graphiti.GraphicsToGraphics2DAdaptor;
 
 /**
  * This over-rides GraphicsToGraphics2DAdaptor
  * Changes go here
  */
-public class ExtendedGraphicsToGraphics2DAdaptor extends GraphicsToGraphics2DAdaptor {
+public class ExtendedGraphicsToGraphics2DAdaptor extends GraphicsToGraphics2DAdaptor implements IPaintFigureListener {
     
     public ExtendedGraphicsToGraphics2DAdaptor(Graphics2D graphics, Rectangle viewPort) {
         super(graphics, viewPort);
@@ -67,6 +74,13 @@ public class ExtendedGraphicsToGraphics2DAdaptor extends GraphicsToGraphics2DAda
             getGraphics2D().setPaint(getColor(getSWTGraphics().getForegroundColor()));
             getGraphics2D().setStroke(createStroke());
             getGraphics2D().draw(path);
+        }
+    }
+
+    @Override
+    public void notifyPaint(IFigure figure) {
+        if(getGraphics2D() instanceof ExtendedSVGGraphics2D) {
+            ((ExtendedSVGGraphics2D)getGraphics2D()).setCurrentFigure(figure);
         }
     }
 }
