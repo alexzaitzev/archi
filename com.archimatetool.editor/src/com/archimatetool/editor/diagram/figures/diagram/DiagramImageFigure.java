@@ -89,6 +89,8 @@ public class DiagramImageFigure extends AbstractDiagramModelObjectFigure {
     
     @Override
     protected void paintFigure(Graphics graphics) {
+        super.paintFigure(graphics);
+        
         graphics.pushState();
         
         graphics.setAntialias(SWT.ON);

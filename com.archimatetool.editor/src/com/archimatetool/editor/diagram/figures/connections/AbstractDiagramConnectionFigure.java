@@ -24,6 +24,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Path;
 
 import com.archimatetool.editor.ArchiPlugin;
+import com.archimatetool.editor.diagram.figures.IPaintFigureListener;
 import com.archimatetool.editor.diagram.figures.ToolTipFigure;
 import com.archimatetool.editor.diagram.util.AnimationUtil;
 import com.archimatetool.editor.preferences.IPreferenceConstants;
@@ -281,6 +282,11 @@ extends RoundedPolylineConnection implements IDiagramConnectionFigure {
     
     @Override
     public void paintFigure(Graphics graphics) {
+        // Notify paint listener
+        if(graphics instanceof IPaintFigureListener) {
+            ((IPaintFigureListener)graphics).notifyPaint(this);
+        }
+
         if(SHOW_TARGET_FEEDBACK) {
             setForegroundColor(TARGET_FEEDBACK_COLOR);
             setLineWidth(getModelConnection().getLineWidth() + 1);

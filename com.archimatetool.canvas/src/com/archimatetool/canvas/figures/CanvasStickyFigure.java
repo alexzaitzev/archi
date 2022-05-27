@@ -128,6 +128,8 @@ extends AbstractDiagramModelObjectFigure implements ITextFigure {
 
     @Override
     protected void paintFigure(Graphics graphics) {
+        super.paintFigure(graphics);
+        
         graphics.pushState();
         
         graphics.setAntialias(SWT.ON);

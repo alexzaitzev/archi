@@ -96,6 +96,14 @@ implements IDiagramModelObjectFigure {
         }
     }
     
+    @Override
+    protected void paintFigure(Graphics graphics) {
+        // Notify paint listener
+        if(graphics instanceof IPaintFigureListener) {
+            ((IPaintFigureListener)graphics).notifyPaint(this);
+        }
+    }
+    
     /**
      * Set the line width and compensate the figure bounds width and height for this line width and translate the graphics instance
      * @param graphics The graphics instance

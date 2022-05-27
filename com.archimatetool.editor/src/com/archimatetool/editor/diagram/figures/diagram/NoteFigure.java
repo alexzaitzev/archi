@@ -106,6 +106,8 @@ public class NoteFigure extends AbstractDiagramModelObjectFigure implements ITex
 
     @Override
     protected void paintFigure(Graphics graphics) {
+        super.paintFigure(graphics);
+        
         graphics.pushState();
         
         Rectangle bounds = getBounds().getCopy();

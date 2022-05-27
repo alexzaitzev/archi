@@ -93,6 +93,8 @@ implements IContainerFigure {
 
     @Override
     protected void paintFigure(Graphics graphics) {
+        super.paintFigure(graphics);
+        
         graphics.setAntialias(SWT.ON);
         drawFigure(graphics);
         if(SHOW_TARGET_FEEDBACK) {

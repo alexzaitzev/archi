@@ -30,6 +30,8 @@ public class JunctionFigure extends AbstractDiagramModelObjectFigure implements 
 
     @Override
     public void paintFigure(Graphics graphics) {
+        super.paintFigure(graphics);
+        
         graphics.pushState();
         
         graphics.setAntialias(SWT.ON);
